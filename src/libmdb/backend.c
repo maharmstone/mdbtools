@@ -262,7 +262,11 @@ mdb_get_colbacktype_string(const MdbColumn *col)
 	const MdbBackendType *type = mdb_get_colbacktype(col);
 	if (!type) {
    		// return NULL;
+#ifdef _MSC_VER
+		static __declspec(thread) char buf[16];
+#else
 		static __thread char buf[16];
+#endif
 		snprintf(buf, sizeof(buf), "Unknown_%04x", col->col_type);
 		return buf;
 	}

@@ -79,13 +79,22 @@ mdb_write_pg(MdbHandle *mdb, unsigned long pg)
 
 		memcpy((char*)mdb->f->data + offset, mdb->pg_buf, mdb->fmt->pg_size);
 	} else {
-		fseeko(mdb->f->stream, 0, SEEK_END);
+		fseek(mdb->f->stream, 0, SEEK_END);
 		/* is page beyond current size + 1 ? */
+#ifdef _MSC_VER
+		if (_ftelli64(mdb->f->stream) < offset + mdb->fmt->pg_size) {
+#else
 		if (ftello(mdb->f->stream) < offset + mdb->fmt->pg_size) {
+#endif
 			fprintf(stderr,"offset %" PRIu64 " is beyond EOF\n",(uint64_t)offset);
 			return 0;
 		}
+
+#ifdef _MSC_VER
+		_fseeki64(mdb->f->stream, offset, SEEK_SET);
+#else
 		fseeko(mdb->f->stream, offset, SEEK_SET);
+#endif
 		len = fwrite(mdb->pg_buf, 1, mdb->fmt->pg_size, mdb->f->stream);
 		if (ferror(mdb->f->stream)) {
 			perror("write");

@@ -27,7 +27,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <ctype.h>
 #include <string.h>
 #include <locale.h>
@@ -46,6 +45,11 @@
 
 #ifdef _WIN32
 #include <io.h>
+#endif
+
+#ifdef _MSC_VER
+#include <basetsd.h>
+typedef SSIZE_T ssize_t;
 #endif
 
 /** \addtogroup mdbtools

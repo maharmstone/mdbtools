@@ -24,8 +24,13 @@
 
 #define DEBUG 1
 
+#ifdef _MSC_VER
+static __declspec(thread) unsigned long opts;
+static __declspec(thread) int optset;
+#else
 static __thread unsigned long opts;
 static __thread int optset;
+#endif
 
 static void load_options(void);
 
@@ -53,7 +58,11 @@ load_options()
     char *ctx;
 
     if (!optset && (s=getenv("MDBOPTS"))) {
+#ifdef _MSC_VER
+		opt = strtok_s(s, ":", &ctx);
+#else
 		opt = strtok_r(s, ":", &ctx);
+#endif
 		while (opt) {
 			if (!strcmp(opt, "use_index")) {
 #ifdef HAVE_LIBMSWSTR
@@ -79,7 +88,11 @@ load_options()
 				opts |= MDB_DEBUG_ROW;
 				opts |= MDB_DEBUG_PROPS;
 			}
+#ifdef _MSC_VER
+			opt = strtok_s(NULL,":", &ctx);
+#else
 			opt = strtok_r(NULL,":", &ctx);
+#endif
 		}
     }
 	optset = 1;

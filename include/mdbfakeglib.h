@@ -24,7 +24,6 @@
 #include <time.h>
 #include <locale.h>
 #include <inttypes.h>
-#include <strings.h>
 
 // for ntohl
 #ifdef _WIN32
@@ -118,7 +117,12 @@ typedef struct GOptionContext {
 
 #define g_return_val_if_fail(a, b) if (!a) { return b; }
 
+#ifdef _MSC_VER
+#define g_ascii_strcasecmp _stricmp
+#else
 #define g_ascii_strcasecmp strcasecmp
+#endif
+
 #define g_malloc0(len) calloc(1, len)
 #define g_malloc malloc
 #define g_free free
@@ -136,10 +140,17 @@ typedef struct GOptionContext {
 #define GUINT32_FROM_LE(l) (uint32_t)l
 #define GUINT64_FROM_LE(l) (uint64_t)l
 #define GINT32_FROM_LE(l) (uint32_t)l
+#define GINT32_TO_LE(l) (int32_t)l
+
+#ifdef _MSC_VER
+#define GINT32_FROM_BE(l) (int32_t)_byteswap_ulong(l)
+#define GUINT32_SWAP_LE_BE(l) (uint32_t)_byteswap_ulong(l)
+#define GINT32_TO_BE(l) (int32_t)_byteswap_ulong(l)
+#else
 #define GINT32_FROM_BE(l) (int32_t)ntohl(l)
 #define GUINT32_SWAP_LE_BE(l) (uint32_t)ntohl(l)
-#define GINT32_TO_LE(l) (int32_t)l
 #define GINT32_TO_BE(l) (int32_t)ntohl(l)
+#endif
 
 /* string functions */
 void *g_memdup(const void *src, size_t len);
@@ -188,16 +199,5 @@ GList *g_list_append(GList *list, void *data);
 GList *g_list_last(GList *list);
 GList *g_list_remove(GList *list, void *data);
 void g_list_free(GList *list);
-
-/* GOption */
-GOptionContext *g_option_context_new(const char *description);
-void g_option_context_add_main_entries (GOptionContext *context,
-        const GOptionEntry *entries,
-        const gchar *translation_domain);
-gchar *g_option_context_get_help (GOptionContext *context,
-        gboolean main_help, void *group);
-gboolean g_option_context_parse (GOptionContext *context,
-        gint *argc, gchar ***argv, GError **error);
-void g_option_context_free (GOptionContext *context);
 
 #endif

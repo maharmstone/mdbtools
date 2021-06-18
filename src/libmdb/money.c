@@ -45,7 +45,7 @@ char *mdb_money_to_string(MdbHandle *mdb, int start)
 	unsigned char multiplier[MAX_MONEY_PRECISION] = { 1 };
 	unsigned char temp[MAX_MONEY_PRECISION];
 	unsigned char product[MAX_MONEY_PRECISION] = { 0 };
-	unsigned char bytes[num_bytes];
+	unsigned char bytes[8];
 
 	memcpy(bytes, mdb->pg_buf + start, num_bytes);
 
@@ -81,7 +81,7 @@ char *mdb_numeric_to_string(MdbHandle *mdb, int start, int scale, int prec) {
        unsigned char multiplier[MAX_NUMERIC_PRECISION] = { 1 };
        unsigned char temp[MAX_NUMERIC_PRECISION];
        unsigned char product[MAX_NUMERIC_PRECISION] = { 0 };
-       unsigned char bytes[num_bytes];
+       unsigned char bytes[16];
 
        memcpy(bytes, mdb->pg_buf + start + 1, num_bytes);
 
